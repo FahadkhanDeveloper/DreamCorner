@@ -1,0 +1,483 @@
+ toLocaleString():
+The toLocaleString() function in JavaScript is used to convert a number into a string, using locale-specific conventions. This method provides a way to format numbers based on the locale and options you specify
+toLocaleString(en-PK)    "en-PK" is a locale identifier
+"en" stands for the English language.                ur   for urdu
+"PK" stands for the country code for Pakistan.            IN stand for the country code for india
+
+Easy way to send Form data to server
+name="Listing[image]"  on server side  this will be accessed in this way 
+  let newListing = req.body.Listing;
+  console.log(newListing);
+Nested Object Notation: The name attribute Listing[country] suggests that the form data will be sent as part of an object named Listing. The value of the country input will be a property of this object.
+
+app.use: Registers middleware that can operate on incoming requests and responses.
+app.set: Configures settings for the Express application that affect its behavior.
+
+Ejs-mate : EJS-Mate is a Node.js library that extends the capabilities of the EJS (Embedded JavaScript) templating engine. It introduces advanced features like layout support, partial views, and block functionality, making it easier to build and manage complex web application templates.
+
+<% layout("/layouts/boilerplate") %>:
+
+This line indicates that the content of this template will be rendered inside a layout defined in the "/layouts/boilerplate" file.
+The layout function is provided by EJS-Mate and allows you to specify a layout template that wraps around this content.
+<div class="container"><%-body %></div>
+
+including bootstrap in ejs file 
+go to bootstrap website => click on quick start   => and copy link tag   and script from starter template code
+ <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+
+
+Middleware: 
+it is an intermediary. (create link)(agent)
+Middleware in Express are functions that come into play after the server receives the request and before the response is sent to the client.
+1) middleware can excess req and response  (object)
+2)chaining    means if request comes we can execute multiple middleware one by one. one function will call 2   . 2 will call 3
+3) send a response   means function will call 2  if 2 send response to 3 then 3 will not call
+if middleware send response then app.get("/", (req, res) => {})      will not execute
+
+What do middleware do:
+Middleware function can perform the following tasks.
+* execute any code
+* Make changes to the request and the response Objects,
+* End the request-response cycle.
+*call the next middleware function in the stack. 
+
+Next: The next middleware function is commonly denoted by a variable named next.
+If the current midddleware function does not end the request-response cycle  it must call the next() to pass control to the next middleware function
+Creating Utility middleware: (usefult middleware)
+it is used in logger (log)   : useful information console or print        (req.method) get post put delete ,  we will also print response time    req.responseTime = new Date(Date.now()).toString()
+or we can log hostname
+
+if we not write the path in middleware function then middle will for for every request but 
+if we write specific path in middleware then middle will work on that specific path
+app.use("/home", (req, res, next) => {}
+we write path in middleware then below path will not work
+app.get("/about", (req, res, next) ) => {}
+
+const express = require("express");
+const app = express();
+
+// http://localhost:3000/api?token=giveaccess
+// if we request on this url then   "you have authorized person " will print otherwise Access denied will print
+
+// app.use("/api", (req, res, next) => {
+//   let { token } = req.query;
+//   if (token === "giveaccess") {
+//     next();
+//   }
+//   res.send("Access denied");
+// });
+
+// app.get("/api", (req, res) => {
+//   res.send("you have authorized person");
+// });
+
+// this will work same as above
+// mutiple middlewares   means in app.get or app.post we can pass multiple middlewares  like
+// this is middle ware
+
+// const checkToken =  (req, res, next) => {
+//     let { token } = req.query;
+//     if (token === "giveaccess") {
+//       next();
+//     }
+//     res.send("Access denied");
+//   }
+
+// so here checkToken is  one middleware and (req, es) is another middleware
+//   app.get("/api", checkToken, (req, res) => {
+//     res.send("you have authorized person");
+//   });
+
+// express default error handler
+app.get("/wrong", (req, res) => {
+  abcd = abcd;
+  // so in this case express will give bydefault error
+});
+
+// how to write own error
+
+const checkToken = (req, res, next) => {
+  let { token } = req.query;
+  if (token === "giveaccess") {
+    next();
+  }
+//  here Error is built-in class 
+  throw new Error("Access denied");
+};
+
+app.get("/api", checkToken, (req, res) => {
+  res.send("you have authorized person");
+});
+
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});
+
+specific Error handling in async function   
+   let { id } = req.params;
+    let chat = await Chat.findById(id);
+    if (!chat) {
+      // throw new ExpressError(404, "Chat not found");
+
+      // this will crash server  because in async function express does not call next() implicitly we have to call
+      // next and pass this express error inside next method so we will not throw error just pass it as argument
+
+      next(new ExpressError(404, "Chat not found"));
+      // but in url jusr change the id character dont use more or less characters
+      // if we send more character in id then it will give mongoose error
+    }
+    res.render("edit.ejs", { chat });
+
+
+for multiple errors in async function write code in try and catch block
+
+app.get("/chats/:id", async (req, res, next) => {
+  try {
+    let { id } = req.params;
+    let chat = await Chat.findById(id);
+    if (!chat) {
+      // throw new ExpressError(404, "Chat not found");
+
+      // this will crash server  because in async function express does not call next() implicitly we have to call
+      // next and pass this express error inside next method so we will not throw error just pass it as argument
+
+      next(new ExpressError(404, "Chat not found"));
+      // but in url jusr change the id character dont use more or less characters
+      // if we send more character in id then it will give mongoose error
+    }
+    res.render("edit.ejs", { chat });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post("/chats", async (req, res, next) => {
+  try {
+    let { from, to, msg } = req.body;
+    let newChat = new Chat({
+      from: from,
+      to: to,
+      msg: msg,
+      created_at: new Date(),
+      // updated_at: new Date(),
+    });
+    await newChat.save();
+    res.redirect("/chats");
+  } catch (err) {
+    // here we pass our error to Default error handler
+    next(err);
+  }
+});
+
+
+writing try and catch for every async function it is bulky (take more space)
+
+Without asyncWrap, you'd have to manually handle errors for every async route handler using try/catch blocks. This can lead to repetitive and messy code.
+// wrap Async
+function asyncWrap(fn) {
+  return function (req, res, next) {
+    fn(req, res, next).catch((err) => next(err));
+  };
+}
+
+
+app.post(
+  "/chats",
+  asyncWrap(async (req, res, next) => {
+    let { from, to, msg } = req.body;
+    let newChat = new Chat({
+      from: from,
+      to: to,
+      msg: msg,
+      created_at: new Date(),
+      // updated_at: new Date(),
+    });
+    await newChat.save();
+    res.redirect("/chats");
+  })
+);
+
+/////////////////////
+/////////////////
+// New Show Route      this show route is for async error handling
+app.get(
+  "/chats/:id",
+  asyncWrap(async (req, res, next) => {
+    let { id } = req.params;
+    let chat = await Chat.findById(id);
+    if (!chat) {
+      // throw new ExpressError(404, "Chat not found");
+
+      // this will crash server  because in async function express does not call next() implicitly we have to call
+      // next and pass this express error inside next method so we will not throw error just pass it as argument
+
+      next(new ExpressError(404, "Chat not found"));
+      // but in url jusr change the id character dont use more or less characters
+      // if we send more character in id then it will give mongoose error
+    }
+    res.render("edit.ejs", { chat });
+  })
+);
+
+console.log(err.name);
+
+To disable the form bydefault validation  write in form tag nonvalidate
+< form novalidate>
+and for adding bootstrap validation  give class needs-validation
+ <form action="/listings" method="POST" novalidate class="needs-validation">     you must add js code also 
+
+This code helps ensure that forms on a webpage only get submitted if all the required fields are filled out correctly. If there are any errors, it will stop the form from being submitted and show feedback to the user.
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(() => {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  const forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
+
+
+
+// app.all: This method tells the app to handle all types of HTTP requests (like GET, POST, PUT, DELETE) for a specific route.
+// "*": The * symbol means "all routes" or "every possible path."
+// So, app.all("*", ...) means "run this code for every request, no matter what the URL path is."
+// 
+// If the request does not match any of the routes defined above, this code will be executed
+app.all("*", (req, res, next) => {
+  next(new ExpressError(404, "Page not found"))
+})
+
+    // if (!newListing.title) {
+    //   throw new ExpressError(400, "Title is missing");
+    // }
+    // if (!newListing.description) {
+    //   throw new ExpressError(400, "description is missing");
+    // }
+    // if (!newListing.location) {
+    //   throw new ExpressError(400, "location is missing");
+    // }
+    // so it is bulky to write schema validation for every model  so we can use tool or pacakge joi
+npm i joi
+documentation for joi   https://joi.dev/api/?v=17.13.3
+const Joi = require("joi");
+module.exports.listingSchema = Joi.object({
+  // when request received to server according to Joi there will be object named listing
+  listing: Joi.object({
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+    location: Joi.string().required(),
+    country: Joi.string().required(),
+    price: Joi.number().required().min(0),
+    image: Joi.string().allow("", null),
+  }).required(),
+});
+
+
+when we are not using data individaually then we will not create differernt  model for that data.    e.g  user   location     we will not create model for location.
+
+// user.js
+// this is one to many(one to few)
+const mongoose = require("mongoose");
+// const Schema = mongoose.Schema;
+// or
+const { Schema } = mongoose;
+
+main()
+  .then(() => {
+    console.log("Connection successful");
+  })
+  .catch((err) => console.log(err));
+
+async function main() {
+  await mongoose.connect("mongodb://127.0.0.1:27017/relationDemo");
+}
+
+const userSchema = new Schema({
+  username: String,
+  addresses: [
+    {
+      // here automatically id will be created for every address
+      _id: false,
+      // after writing _id: false now  id will not be created for every address
+      location: String,
+      city: String,
+    },
+  ],
+});
+const User = mongoose.model("User", userSchema);
+const addUsers = async () => {
+  let user1 = new User({
+    username: "sherlockhelmes",
+    addresses: [
+      {
+        location: "221B Baker Street",
+        city: "London",
+      },
+    ],
+  });
+  // here we save another address also
+  user1.addresses.push({ location: "P32 Wallstreet", city: "Londom" });
+  let result = await user1.save();
+  console.log(result);
+};
+addUsers();
+
+// customer.js
+// one to many (approach 2)
+const mongoose = require("mongoose");
+// const Schema = mongoose.Schema;
+// or
+const { Schema } = mongoose;
+main()
+  .then(() => {
+    console.log("Connection successful");
+  })
+  .catch((err) => console.log(err));
+
+async function main() {
+  await mongoose.connect("mongodb://127.0.0.1:27017/relationDemo");
+}
+const orderSchema = new Schema({
+  item: String,
+  price: Number,
+});
+
+const customerSchema = new Schema({
+  name: String,
+  //   for below code goto mongoose documentation and click on populate
+  orders: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Order",
+    },
+  ],
+});
+const Order = mongoose.model("Order", orderSchema);
+const Customer = mongoose.model("Customer", customerSchema);
+// const addCustomer = async () => {
+//   let cust1 = new Customer({
+//     name: "Fahad khan",
+//   });
+
+//   let order1 = await Order.findOne({ item: "Chips" });
+//   let order2 = await Order.findOne({ item: "Chocolate" });
+
+//   cust1.orders.push(order1);
+//   cust1.orders.push(order2);
+//   //   here we push entire order to cust1 (customers collection) but only ids of that orders will be stored in the
+//   // customers collection orders
+
+//   let result = await cust1.save();
+//   console.log(result);
+//   //   here it will print that whole order is stored in customers orders but in db orderes ids will be stored only
+// };
+// addCustomer();
+const findCustomer = async () => {
+  // so by using populate("orders")  it will print whole orders object instead of ids
+  let result = await Customer.find({}).populate("orders");
+  console.log(result);
+  console.log(result[0]);
+};
+findCustomer();
+
+// const addOrder = async () => {
+//     let result = await Order.insertMany([
+//         {item: "Samosa", price: 12},
+//         {item: "Chips", price: 10},
+//         {item: "Chocolate", price: 40}
+
+//     ])
+//     console.log(result)
+// }
+
+// addOrder();
+
+
+// posts.js
+// one to many (approach 3/ one to squillions)
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
+main()
+  .then(() => {
+    console.log("Connection successful");
+  })
+  .catch((err) => console.log(err));
+
+async function main() {
+  await mongoose.connect("mongodb://127.0.0.1:27017/relationDemo");
+}
+const userSchema = new Schema({
+  username: String,
+  email: String,
+});
+
+// here post is child Model/collection
+const postSchema = new Schema({
+  content: String,
+  likes: Number,
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+});
+
+const User = mongoose.model("User", userSchema);
+const Post = mongoose.model("Post", postSchema);
+
+// const addData = async () => {
+// let user1 = new User({
+//     username: "Fahad khan",
+//     email: "fahad@gmail.com",
+// })
+// let post1 = new Post({
+//     content: "Hello World",
+//     like: 7
+// })
+// post1.user = user1;
+// await user1.save();
+// await post1.save();
+// }
+// const addData = async () => {
+//   let user1 = await User.findOne({ username: "Fahad khan" });
+//   let post2 = new Post({
+//     content: "Bye Bye!!",
+//     like: 13,
+//   });
+//   post2.user = user1;
+//   await post2.save();
+// };
+// addData();
+const getData = async () => {
+  // this will print user all details
+  //   let result = await Post.findOne({}).populate("user");
+  // this will print only username from user   id will print for every one
+  let result = await Post.findOne({}).populate("user", "username");
+  console.log(result);
+};
+getData();
+
+6 Rules of thumb for mongoDB Schema
+https://www.mongodb.com/blog/post/6-rules-of-thumb-for-mongodb-schema-design
+
+
+
+
+
+
+
+
