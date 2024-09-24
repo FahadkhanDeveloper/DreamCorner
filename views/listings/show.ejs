@@ -1,9 +1,15 @@
 <% layout("/layouts/boilerplate") %>
+<script>
+  const mapToken = "<%= process.env.MAP_TOKEN %>";
+  const listing = <%- JSON.stringify(listing) %>;
+</script>
+
 <div class="row mt-3">
-  <div class="col-8 offset-3">
+  <div class="col-8 offset-md-3 offset-1">
     <h3><%= listing.title %></h3>
   </div>
-  <div class="card col-6 offset-3 show-card listing-card">
+
+  <div class="card col-6 offset-md-3 offset-1 show-card listing-card">
     <img
       src="<%= listing.image.url %>"
       class="card-img-top show-img"
@@ -11,6 +17,7 @@
     />
     <div class="card-body">
       <p class="card-text"><i>Owned by <%= listing.owner.username %></i></p>
+      <p class="card-text"><%= listing.category %></p>
       <p class="card-text"><%= listing.description %></p>
       <p class="card-text">
         &#8377; <%= listing.price.toLocaleString("en-PK") %>
@@ -20,24 +27,23 @@
     </div>
   </div>
 
-  <br />
-  <% if(currUser && currUser._id.equals(listing.owner._id)) { %>
+  <% if (currUser && currUser._id.equals(listing.owner._id)) { %>
   <div class="btns">
     <a
       href="/listings/<%= listing._id %>/edit"
-      class="btn btn-dark col-1 offset-3 edit-btn"
+      class="btn btn-dark col-md-1 col-2 offset-md-3 offset-1 edit-btn"
       >Edit</a
     >
-    <form method="POST" action="/listings/<%= listing._id%>?_method=DELETE">
+    <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
       <button class="btn btn-dark offset-5">Delete</button>
     </form>
   </div>
   <% } %>
 
-  <!-- review section -->
-  <div class="col-8 offset-3 mb-3">
+  <!-- Review section -->
+  <div class="col-md-8 offset-md-3 col-10 offset-1 mb-3">
+    <% if (currUser) { %>
     <hr />
-    <% if(currUser) { %>
     <h4>Leave a Review</h4>
     <form
       action="/listings/<%= listing.id %>/reviews"
@@ -104,6 +110,7 @@
           rows="5"
           class="form-control"
           required
+          style="width: 100%"
         ></textarea>
         <div class="invalid-feedback">Please add some comment for review</div>
       </div>
@@ -112,28 +119,37 @@
     <hr />
     <% } %>
 
-    <!-- Display review  -->
-    <p><b>All Reviews</b></p>
+    <!-- Display reviews -->
+    <% if (listing.reviews.length > 0) { %>
     <div class="row">
-      <% for(review of listing.reviews) { %>
+      <p><b>All Reviews</b></p>
+      <% listing.reviews.forEach(function (review) { %>
       <div class="card col-5 ms-3 mb-3">
         <div class="card-body">
           <h5 class="card-title"><%= review.author.username %></h5>
-          <p
-            class="starability-result card-text"
-            data-rating="<%= review.rating %>"
-          ></p>
+          <p class="starability-result card-text" data-rating="<%= review.rating %>"></p>
           <p class="card-text"><%= review.comment %></p>
+          
+          <% if (currUser && currUser._id.equals( review.author._id)) { %>
+          <form
+            class="my-3"
+            method="POST"
+            action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE"
+          >
+            <button class="btn btn-sm btn-dark">Delete</button>
+          </form>
+          <% } %>
         </div>
-        <form
-          class="my-3"
-          method="POST"
-          action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE"
-        >
-          <button class="btn btn-sm btn-dark">Delete</button>
-        </form>
       </div>
-      <% } %>
+      <% }) %>
     </div>
+    <% } %>
+  </div>
+
+  <div class="col-md-6 offset-md-3 mb-3 col-4 offset-1">
+    <h3 class="text-nowrap">Where you'll be</h3>
+    <div id="map"></div>
   </div>
 </div>
+
+<script src="/js/map.js"></script>

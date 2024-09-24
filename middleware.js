@@ -5,6 +5,7 @@ const { listingSchema, reviewSchema } = require("./schema.js");
 
 // this middleware is for authentication
 module.exports.isLoggedIn = (req, res, next) => {
+  // console.log(req.path, " ..... ", req.originalUrl)
   if (!req.isAuthenticated()) {
     req.session.redirectUrl = req.originalUrl;
     req.flash("error", "you must be logged in to create listing.");
@@ -12,15 +13,12 @@ module.exports.isLoggedIn = (req, res, next) => {
   }
   next();
 };
-
 module.exports.saveRedirectUrl = (req, res, next) => {
   if (req.session.redirectUrl) {
     res.locals.redirectUrl = req.session.redirectUrl;
   }
   next();
 };
-
-// this middleware is for authorization (for create listing and delete listing)
 module.exports.isOwner = async (req, res, next) => {
   let { id } = req.params;
   let listing = await Listing.findById(id);
@@ -30,8 +28,6 @@ module.exports.isOwner = async (req, res, next) => {
   }
   next();
 };
-
-// middleware function for server side validation using Jio for listing
 module.exports.validateListing = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
   console.log(error);
@@ -42,8 +38,6 @@ module.exports.validateListing = (req, res, next) => {
     next();
   }
 };
-
-// middleware function for server side validation using Jio for Review
 module.exports.validateReview = (req, res, next) => {
   let { error } = reviewSchema.validate(req.body);
   console.log(error);
@@ -54,8 +48,6 @@ module.exports.validateReview = (req, res, next) => {
     next();
   }
 };
-
-// this middleware is for Review authorization (for Review Delete)
 module.exports.isReviewAuthor = async (req, res, next) => {
   let { id, reviewId } = req.params;
   let review = await Review.findById(reviewId);

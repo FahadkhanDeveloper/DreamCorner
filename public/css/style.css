@@ -14,13 +14,14 @@ body {
     background-color: white;
 }
 .fa-hiking {
-    margin: 1rem 0 0 1rem;
+    margin: 0.2rem 0 0 1rem;
     color: #fe424d;
     font-size: 1.9rem;
 }
 .nav-link {
     color: #222222 !important;
 }
+
 
 /* footer */
 .f-info-links a{
@@ -50,6 +51,52 @@ body {
     font-size: 1.2rem;
     margin-right: 1rem;
 }
+
+/* index page */
+  #filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .filter {
+    text-align: center;
+    margin-right: 2rem;
+    margin-top: 2rem;
+    opacity: 0.7;
+  }
+  .filter:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+  .filter p {
+    font-size: 0.8rem;
+  }
+  .filter a {
+    text-decoration: none;
+    color: #000;
+  }
+  .tax-info {
+    display: none;
+  }
+  .tax-toggle {
+    border: 1px solid black;
+    border-radius: 1rem;
+    height: 3.25rem;
+    padding: 1rem;
+    margin-left: 2rem;
+    display: flex;
+    align-items: center;
+  }
+
+  @media (max-width: 1400px) {
+    .tax-toggle {
+      margin: 1rem auto 0 auto;
+      justify-content: center;
+      display: flex;
+    }
+  }
+
 
 /* Cards */
 .listing-card {
@@ -106,4 +153,10 @@ body {
     height: 25vh;
     width: 270px;
 }
+
+/* map styling */
+#map{
+    height: 400px;
+    width: 80vh;
+ }
 

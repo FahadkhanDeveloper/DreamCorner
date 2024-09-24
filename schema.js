@@ -1,6 +1,5 @@
 const Joi = require("joi");
 module.exports.listingSchema = Joi.object({
-  // when request received to server according to Joi there will be object named listing
   listing: Joi.object({
     title: Joi.string().required(),
     description: Joi.string().required(),
@@ -8,6 +7,7 @@ module.exports.listingSchema = Joi.object({
     country: Joi.string().required(),
     price: Joi.number().required().min(0),
     image: Joi.string().allow("", null),
+    category: Joi.string().required(),
   }).required(),
 });
 

@@ -7,6 +7,7 @@ DreamCorner is a full-stack web application designed to help users create, manag
 - **User Authentication**: Secure sign-up and login features using Passport.js.
 - **User Authorization**: Control access to specific features and actions based on user roles and permissions.
 - **Listing Management**: Effortlessly create, update, and delete property listings.
+- **Search by Country**: Enter a country name in the search field, and DreamCorner will return all property listings associated with that country.
 - **Image Handling**: Upload and manage listing images with Cloudinary integration.
 - **Review System**: Leave and manage reviews for different listings.
 - **Responsive Design**: Enjoy a mobile-friendly experience thanks to Bootstrap.
